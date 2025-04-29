@@ -26,10 +26,25 @@ export function renderOrderSummary() {
     const deliveryDate = today.add(deliveryOption.deliveryDays, "days");
     const dateString = deliveryDate.format("dddd, MMMM D");
 
+    const renderUpdateOrSave = () => {
+      let html = "";
+
+      let Save =
+        `
+        <span> Quantity:<input class="quantity-input" type="number" value='${cartItem.quantity}'/></span>
+        <span class="save-quantity-link link-primary js-save-link" data-product-id='${matchingProduct.id}'>Save<span/>`;
+      let Update =
+        `<span> Quantity: <span class="quantity-label">${cartItem.quantity}</span></span>
+        <span class="update-quantity-link link-primary js-link-primary" data-product-id='${matchingProduct.id}'>Update</span>`;
+
+      html = !cartItem.updateStatus ? Update : Save;
+
+      return html;
+    }
+
     cartSummaryHTML += `
-    <div class="cart-item-container js-cart-item-container-${
-      matchingProduct.id
-    }">
+    <div class="cart-item-container js-cart-item-container-${matchingProduct.id
+      }">
         <div class="delivery-date">Delivery date:${dateString}</div>
 
         <div class="cart-item-details-grid">
@@ -43,18 +58,12 @@ export function renderOrderSummary() {
                 ${matchingProduct.name}
             </div>
             <div class="product-price">$${currencyFormat(
-              matchingProduct.priceCents
-            )}</div>
+        matchingProduct.priceCents
+      )}</div>
             <div class="product-quantity">
-                <span> Quantity: <span class="quantity-label">${
-                  cartItem.quantity
-                }</span> </span>
-                <span class="update-quantity-link link-primary">
-                Update
-                </span>
-                <span class="delete-quantity-link link-primary js-delete-link" data-product-id='${
-                  matchingProduct.id
-                }'>
+                ${renderUpdateOrSave()}
+                <span class="delete-quantity-link link-primary js-delete-link" data-product-id='${matchingProduct.id
+      }'>
                 Delete
                 </span>
             </div>
@@ -143,4 +152,33 @@ export function renderOrderSummary() {
       renderPaymentSummary();
     });
   });
+
+  document.querySelectorAll('.js-link-primary').forEach((link) => {
+    link.addEventListener('click', () => {
+      cart.forEach((cartItem) => {
+        if (cartItem.productId === link.dataset.productId) {
+          cartItem.updateStatus = true;
+        }
+      });
+      renderOrderSummary();
+    })
+  })
+
+  document.querySelectorAll('.js-save-link').forEach((link) => {
+    link.addEventListener('click', () => {
+      cart.forEach((cartItem) => {
+        if (cartItem.productId === link.dataset.productId) {
+          cartItem.updateStatus = false;
+          let val = document.querySelector('.quantity-input').value;
+          if (val > 0)
+            cartItem.quantity = val;
+          else
+            alert("Not a valid Quantity");
+        }
+      });
+      renderOrderSummary();
+      renderPaymentSummary();
+    })
+  })
+
 }
