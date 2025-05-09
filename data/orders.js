@@ -46,7 +46,7 @@ function renderEachOrder(eachOrder) {
               </div>
               <div class="product-delivery-date">Arriving on: ${dateString}</div>
               <div class="product-quantity">Quantity: ${matchingProduct.quantity}</div>
-              <button class="buy-again-button button-primary">
+              <button class="buy-again-button button-primary js-button-buy" data-product-id='${matchingProduct.id}'>
                 <img class="buy-again-icon" src="images/icons/buy-again.png" />
                 <span class="buy-again-message">Buy it again</span>
               </button>
@@ -98,6 +98,12 @@ export function renderYourOrders() {
         `;
   });
   document.querySelector('.js-orders-grid').innerHTML = html;
+  document.querySelectorAll('.js-button-buy').forEach((button) => {
+    button.addEventListener('click', () => {
+      addToCart(button.dataset.productId);
+      document.querySelector(".js-cart-quantity").innerHTML = `${calculateCartQuantity()}`
+    });
+  });
 }
 
 function renderOrderHeader() {
