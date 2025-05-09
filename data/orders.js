@@ -1,39 +1,41 @@
 import { currencyFormat } from "../scripts/utils/money.js";
 import { products, loadProducts } from "./products.js";
 import dayjs from "https://unpkg.com/supersimpledev@8.5.0/dayjs/esm/index.js";
+import { cart, addToCart, calculateCartQuantity } from "../data/cart.js";
 
 
 document.addEventListener('DOMContentLoaded', () => {
-    loadProducts(renderYourOrders);
+  loadProducts(renderYourOrders);
+  renderOrderHeader();
 });
 
 export const orders = JSON.parse(localStorage.getItem('orders')) || [];
 
 
 export function addOrder(order) {
-    orders.unshift(order);
-    saveToStorage();
+  orders.unshift(order);
+  saveToStorage();
 }
 
 function saveToStorage() {
-    localStorage.setItem('orders', JSON.stringify(orders));
+  localStorage.setItem('orders', JSON.stringify(orders));
 }
 
 
 function findProduct(orderProduct) {
-    return products.find((product) => orderProduct.productId === product.id);
+  return products.find((product) => orderProduct.productId === product.id);
 }
 
 function renderEachOrder(eachOrder) {
-    let html = '';
-    const products = eachOrder.products;
-    products.forEach((product) => {
-        const matchingProduct = findProduct(product);
-        if (!matchingProduct) return;
-        let deliveryDate = dayjs(product.estimatedDeliveryTime);
-        const dateString = deliveryDate.format("dddd, MMMM D");
+  let html = '';
+  const products = eachOrder.products;
+  products.forEach((product) => {
+    const matchingProduct = findProduct(product);
+    if (!matchingProduct) return;
+    let deliveryDate = dayjs(product.estimatedDeliveryTime);
+    const dateString = deliveryDate.format("dddd, MMMM D");
 
-        html += `
+    html += `
             <div class="product-image-container">
               <img src="${matchingProduct.image}" />
             </div>
@@ -58,18 +60,18 @@ function renderEachOrder(eachOrder) {
               </a>
             </div>
         `;
-    });
-    return html;
+  });
+  return html;
 }
 
 
 export function renderYourOrders() {
-    document.querySelector('.js-orders-grid').innerHTML = "";
-    let html = "";
-    orders.forEach((eachOrder) => {
-        let deliveryDate = dayjs(orders.orderTime);
-        const dateString = deliveryDate.format("dddd, MMMM D");
-        html += `
+  document.querySelector('.js-orders-grid').innerHTML = "";
+  let html = "";
+  orders.forEach((eachOrder) => {
+    let deliveryDate = dayjs(orders.orderTime);
+    const dateString = deliveryDate.format("dddd, MMMM D");
+    html += `
             <div class="order-container">
           <div class="order-header">
             <div class="order-header-left-section">
@@ -94,7 +96,45 @@ export function renderYourOrders() {
           </div>
         </div>
         `;
-    });
-    document.querySelector('.js-orders-grid').innerHTML = html;
+  });
+  document.querySelector('.js-orders-grid').innerHTML = html;
 }
 
+function renderOrderHeader() {
+  let html = "";
+  html += `
+    <div class="amazon-header-left-section">
+        <a href="amazon.html" class="header-link">
+          <img class="amazon-logo" src="images/amazon-logo-white.png" />
+          <img
+            class="amazon-mobile-logo"
+            src="images/amazon-mobile-logo-white.png"
+          />
+        </a>
+      </div>
+
+      <div class="amazon-header-middle-section">
+        <input class="search-bar" type="text" placeholder="Search" />
+
+        <button class="search-button">
+          <img class="search-icon" src="images/icons/search-icon.png" />
+        </button>
+      </div>
+
+      <div class="amazon-header-right-section">
+        <a class="orders-link header-link" href="orders.html">
+          <span class="returns-text">Returns</span>
+          <span class="orders-text">& Orders</span>
+        </a>
+
+        <a class="cart-link header-link" href="checkout.html">
+          <img class="cart-icon" src="images/icons/cart-icon.png" />
+          <div class="cart-quantity js-cart-quantity">
+            ${calculateCartQuantity()}
+          </div>
+          <div class="cart-text">Cart</div>
+        </a>
+      </div>
+  `;
+  document.querySelector(".js-amazon-header").innerHTML = html;
+}
