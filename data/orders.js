@@ -34,6 +34,7 @@ function renderEachOrder(eachOrder) {
     if (!matchingProduct) return;
     let deliveryDate = dayjs(product.estimatedDeliveryTime);
     const dateString = deliveryDate.format("dddd, MMMM D");
+    console.log(matchingProduct);
 
     html += `
             <div class="product-image-container">
@@ -45,7 +46,7 @@ function renderEachOrder(eachOrder) {
                 ${matchingProduct.name}
               </div>
               <div class="product-delivery-date">Arriving on: ${dateString}</div>
-              <div class="product-quantity">Quantity: ${matchingProduct.quantity}</div>
+              <div class="product-quantity">Quantity: ${product.quantity}</div>
               <button class="buy-again-button button-primary js-button-buy" data-product-id='${matchingProduct.id}'>
                 <img class="buy-again-icon" src="images/icons/buy-again.png" />
                 <span class="buy-again-message">Buy it again</span>
@@ -53,7 +54,7 @@ function renderEachOrder(eachOrder) {
             </div>
 
             <div class="product-actions">
-              <a href="tracking.html?orderId=123&productId=456;">
+              <a href="tracking.html?orderId=${eachOrder.id}&productId=${matchingProduct.id}">
                 <button class="track-package-button button-secondary">
                   Track package
                 </button>
